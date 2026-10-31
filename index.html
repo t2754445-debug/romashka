@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ромашка с Ниганом</title>
+<meta name="description" content="Домашка «Ромашка» Школы личного влияния: проходите вдвоём, вопросы читает Ниган голосом, ответы скачиваете себе для отчёта.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ромашка с Ниганом — домашка Школы влияния">
+<meta property="og:description" content="Проходите Ромашку вдвоём: что это и зачем, все 8 лепестков с вопросами, Ниган читает их голосом. В конце каждый скачивает свои ответы для отчёта.">
+<meta property="og:image" content="https://t2754445-debug.github.io/romashka/assets/og.jpg">
+<meta property="og:url" content="https://t2754445-debug.github.io/romashka/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/negan/idle.png">
+<style>
+@font-face{font-family:'Unbounded';src:url(assets/fonts/unbounded.woff2) format('woff2');font-weight:200 900;font-display:swap}
+@font-face{font-family:'Nunito';src:url(assets/fonts/nunito.woff2) format('woff2');font-weight:200 1000;font-display:swap}:root{
+  --night:#141c4a; --night2:#1d2760; --panel:#1f2a66; --panel2:#26327a; --line:#36448f;
+  --ink:#ffffff; --ink2:#c9d0f0; --muted:#8f9acb;
+  --win:#f5c34f; --orange:#ff6a1a; --orange-d:#e2540a; --ok:#3ccb52;
+  --hf:'Unbounded','Nunito',sans-serif; --tf:'Nunito',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{margin:0;min-height:100vh;color:var(--ink);font:17px/1.6 var(--tf);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(120% 70% at 70% 0%,#2a3680 0%,var(--night) 55%,#0e143a 100%) fixed}
+/* небо: звёзды, дроны, город с роботом */
+.sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:1px;animation:tw 3.6s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.25}to{opacity:1}}
+.drone{position:absolute;width:44px;image-rendering:pixelated;animation:fly linear infinite}
+.drone svg{width:100%;height:auto;display:block}
+@keyframes fly{from{transform:translateX(-80px)}to{transform:translateX(calc(100vw + 80px))}}
+.drone .blink{animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.city{position:absolute;left:0;right:0;bottom:0;height:170px;opacity:.6}
+.city svg{width:100%;height:100%;display:block}
+.wrap{position:relative;z-index:1}
+
+header{display:flex;align-items:center;gap:14px 26px;flex-wrap:wrap;padding:16px 24px;max-width:1240px;margin:0 auto}
+.logo{display:flex;flex-direction:column;line-height:.95;text-decoration:none;color:#fff}
+.logo b{font:600 13px var(--hf);letter-spacing:.02em}
+.logo .rb{font-size:26px;margin-top:4px}
+/* как «деткам» на главной ЭТП: жирный Unbounded в цветах букв логотипа */
+.rb{font-family:var(--hf);font-weight:900;letter-spacing:-.01em;white-space:nowrap}
+.brand-h{font:900 clamp(44px,6vw,76px)/1 var(--hf);margin:0 0 6px}
+.rb span:nth-child(6n+1){color:#ff4a50}.rb span:nth-child(6n+2){color:#ff7a45}.rb span:nth-child(6n+3){color:#3ccb52}
+.rb span:nth-child(6n+4){color:#2fd3c3}.rb span:nth-child(6n+5){color:#7d93ff}.rb span:nth-child(6n+6){color:#e46cf0}
+.pair{display:flex;align-items:center;gap:8px;color:var(--ink2);font-weight:700;font-size:14px}
+.pair input{width:118px;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:rgba(255,255,255,.04);color:#fff;font:700 14px var(--tf)}
+.pair input:focus{outline:none;border-color:var(--win)}
+.round{font:600 13px var(--hf);color:var(--night);background:var(--win);padding:7px 14px;border-radius:999px}
+.save{margin-left:auto;font-size:13px;color:var(--muted);font-weight:700}
+.save.ok{color:var(--ok)}.save.warn{color:var(--win)}
+
+main{max-width:1240px;margin:0 auto;padding:8px 24px 240px;display:grid;grid-template-columns:340px 1fr;gap:34px}
+/* телефон: Ниган с репликой → вопросы → ромашка и шаги */
+@media(max-width:900px){
+  main{display:flex;flex-direction:column;gap:18px;padding:8px 16px 200px}header{padding:14px 16px}
+}
+.side{position:sticky;top:14px;align-self:start}
+
+/* Ниган */
+.guide{position:relative;display:flex;flex-direction:column;align-items:center}
+.bubble{position:relative;width:100%;background:#fff;color:#141c4a;border-radius:18px;padding:14px 16px 14px;font-weight:700;font-size:15.5px;line-height:1.45;min-height:84px;
+  box-shadow:0 0 0 3px #0e143a,0 10px 30px rgba(0,0,0,.35)}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-14px;margin-left:-10px;border:10px solid transparent;border-top:14px solid #fff;border-bottom:0}
+.bubble .who{display:block;font:600 11px var(--hf);letter-spacing:.06em;text-transform:uppercase;color:var(--orange-d);margin-bottom:4px}
+.negan{width:180px;height:280px;margin-top:10px;image-rendering:pixelated;background-size:contain;background-repeat:no-repeat;background-position:center bottom;filter:drop-shadow(0 8px 0 rgba(0,0,0,.25))}
+.roof{width:240px;height:12px;border-radius:6px;background:var(--panel2);margin-top:-4px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.voicebar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:rgba(255,255,255,.04);color:#fff;font:800 13.5px var(--tf);cursor:pointer}
+.chip:hover{border-color:var(--win)}
+.chip.on{background:var(--win);border-color:var(--win);color:var(--night)}
+
+/* ромашка-навигация */
+svg.daisy{width:210px;height:210px;display:block;margin:22px auto 0}
+.petal{fill:var(--panel);stroke:var(--line);stroke-width:2;cursor:pointer;transition:fill .25s}
+.petal:hover{stroke:var(--win)}
+.petal.done{fill:#5a4a1c;stroke:var(--win)}
+.petal.cur{fill:var(--orange);stroke:#ffd0b0;filter:drop-shadow(0 0 10px rgba(255,106,26,.7))}
+.pnum{font:600 14px var(--hf);fill:#fff;pointer-events:none}
+.core{fill:var(--win);cursor:pointer}.core.cur{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 12px rgba(245,195,79,.8))}
+.core-t{font:700 10px var(--hf);fill:var(--night);pointer-events:none}
+.steps{list-style:none;padding:6px;margin:14px 0 0;font-size:14px;font-weight:700;background:rgba(20,28,74,.88);border-radius:16px}
+.steps li{display:flex;gap:8px;padding:6px 12px;border-radius:12px;color:var(--muted);cursor:pointer}
+.steps li:hover{color:#fff}
+.steps li.cur{background:var(--panel);color:#fff}
+.steps li::before{content:"";width:8px;height:8px;border-radius:2px;margin-top:8px;flex:none;background:var(--line)}
+.steps li.done::before{background:var(--win);box-shadow:0 0 8px var(--win)}
+.steps li.cur::before{background:var(--orange)}
+
+/* карточка шага */
+.card{background:linear-gradient(180deg,rgba(38,50,122,.92),rgba(31,42,102,.92));border:1.5px solid var(--line);border-radius:26px;padding:30px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+@media(max-width:600px){.card{padding:22px 18px;border-radius:20px}}
+.eyebrow{margin:0 0 8px;font-weight:800;font-size:15px;color:var(--win)}
+h2{margin:0 0 18px;font:700 clamp(26px,3.6vw,40px)/1.1 var(--hf);letter-spacing:-.01em;text-wrap:balance}
+.roles{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.roles span{padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.06);font-size:14px;font-weight:700;color:var(--ink2)}
+.roles b{color:#fff}
+.doing{margin:0 0 20px;padding:12px 16px;border-radius:14px;background:rgba(245,195,79,.1);border:1.5px dashed rgba(245,195,79,.45);color:var(--ink2);font-weight:700}
+.doing b{color:var(--win)}
+.next{width:100%;margin:0 0 14px}
+ol.q{list-style:none;padding:0;margin:0 0 6px;counter-reset:q}
+ol.q li{counter-increment:q;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:14px;font-size:18px;line-height:1.45;cursor:pointer;transition:background .15s}
+ol.q li:hover{background:rgba(255,255,255,.05)}
+ol.q li .n{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font:600 13px var(--hf);background:var(--panel);border:1.5px solid var(--line);color:var(--ink2);margin-top:1px}
+ol.q li .t{flex:1}
+ol.q li .t i{display:block;font-size:13px;color:var(--muted);font-style:normal;font-weight:700}
+ol.q li .play{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:13px}
+ol.q li .play:hover{background:var(--orange)}
+ol.q li.asked{color:var(--muted)}
+ol.q li.asked .n{background:var(--win);border-color:var(--win);color:var(--night)}
+ol.q li.speaking{background:rgba(255,106,26,.16);color:#fff}
+ol.q li.speaking .play{background:var(--orange)}
+.tips{margin:14px 0 4px;padding:14px 18px;border-radius:16px;background:rgba(125,147,255,.12);border:1.5px solid rgba(125,147,255,.35);font-size:15.5px}
+.tips b{font:600 12px var(--hf);letter-spacing:.05em;text-transform:uppercase;color:#a9b8ff}
+.tips ul{margin:6px 0 0;padding-left:18px}
+label{display:block;margin:18px 0 6px;font-weight:800;font-size:14px;color:var(--ink2)}
+textarea,input.f{width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:rgba(10,14,42,.45);color:#fff;font:16px/1.5 var(--tf);resize:vertical}
+textarea{min-height:110px}
+textarea::placeholder,input.f::placeholder{color:#6f7ab0}
+textarea:focus,input.f:focus{outline:none;border-color:var(--win);box-shadow:0 0 0 3px rgba(245,195,79,.18)}
+.range{display:flex;align-items:center;gap:14px}.range input{flex:1;accent-color:var(--orange)}.range b{min-width:44px;font:700 22px var(--hf);color:var(--win)}
+.rules{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.rules li{padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.05)}
+.rules b{color:var(--win)}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.btn{font:800 16px var(--tf);padding:13px 26px;border-radius:999px;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:#fff;cursor:pointer}
+.btn:hover{border-color:#fff}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.pri{background:var(--orange);border-color:var(--orange);box-shadow:0 8px 24px rgba(255,106,26,.45)}
+.btn.pri:hover{background:var(--orange-d)}
+.btn.sm{padding:9px 18px;font-size:14px}
+.muted{color:var(--muted);font-size:14.5px;font-weight:700}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.cols h3{margin:0 0 10px;font:600 18px var(--hf)}
+.sum{white-space:pre-wrap;background:rgba(10,14,42,.45);border:1.5px solid var(--line);border-radius:14px;padding:14px;font-size:14px;max-height:360px;overflow:auto;color:var(--ink2)}
+/* «Что это и зачем» */
+.lead{font-size:20px;line-height:1.5;font-weight:700;margin:0 0 24px;color:#fff;max-width:60ch}
+.ab h3{margin:34px 0 12px;font:700 20px/1.2 var(--hf);color:var(--win)}
+.ab p{margin:0 0 12px;color:var(--ink2);max-width:66ch}
+.ab p b{color:#fff}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:center}
+@media(max-width:700px){.layout{grid-template-columns:1fr}}
+.layout svg{width:100%;height:auto}
+.sheet{fill:#f3f1ec;stroke:#0e143a;stroke-width:2}.sheet-c{fill:var(--win)}
+.sheet-t{font:700 9px var(--tf);fill:#141c4a}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.gl div{padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.05);font-size:15.5px;color:var(--ink2)}
+.gl b{display:block;color:#fff;font-size:16px}
+.pl{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.pl li{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.05)}
+.pl li span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:1.5px solid var(--line);font:600 14px var(--hf)}
+.pl li b{color:#fff}.pl li div{color:var(--ink2);font-size:15.5px}
+.ex{border-left:3px solid var(--orange);padding:4px 0 4px 16px;margin:0 0 14px}
+.ex b{color:#fff}.ex i{display:block;font-style:normal;color:var(--win);font-weight:800;font-size:14.5px}
+.out{margin:0;padding-left:20px;color:var(--ink2)}.out li{margin:4px 0}
+.gsw{font:800 12px var(--tf);width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:rgba(255,255,255,.06);color:var(--win);cursor:pointer}
+.gsw:hover{border-color:var(--win)}
+a.chip{text-decoration:none}
+.credit{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;color:var(--muted);font-size:14px;font-weight:700}
+.credit b{color:#fff}
+kbd{font:700 12px var(--tf);padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)}
+/* телефон, в конце — чтобы перебить стили Нигана и ромашки выше */
+@media(max-width:900px){
+  .side{display:contents}.guide{order:1}#view{order:2}svg.daisy{order:3;margin:0 auto}.steps{order:4}
+  .guide{display:grid;grid-template-columns:96px 1fr;align-items:end;gap:0 12px}
+  .bubble{grid-column:2;grid-row:1}.bubble::after{left:-12px;bottom:22px;margin:0;border:8px solid transparent;border-right:12px solid #fff;border-left:0}
+  .negan{grid-column:1;grid-row:1;width:96px;height:150px;margin:0}.roof{display:none}
+  .voicebar{grid-column:1/-1;justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="sky" id="sky">
+  <div class="city">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges">
+      <g fill="#18205a">
+        <rect x="0" y="120" width="90" height="80"/><rect x="100" y="90" width="70" height="110"/><rect x="180" y="130" width="110" height="70"/>
+        <rect x="300" y="70" width="40" height="130"/><rect x="315" y="40" width="10" height="30"/><rect x="350" y="110" width="120" height="90"/>
+        <rect x="480" y="95" width="80" height="105"/><rect x="760" y="100" width="130" height="100"/><rect x="900" y="60" width="60" height="140"/>
+        <rect x="925" y="20" width="10" height="40"/><rect x="970" y="120" width="140" height="80"/><rect x="1120" y="85" width="90" height="115"/>
+        <rect x="1220" y="125" width="120" height="75"/><rect x="1350" y="100" width="90" height="100"/>
+      </g>
+      <!-- робот за домами, справа — чтобы не прятался за карточкой -->
+      <g transform="translate(640 0)">
+      <g fill="#121a4c">
+        <rect x="600" y="40" width="120" height="160"/><rect x="620" y="0" width="80" height="44"/><rect x="655" y="-14" width="10" height="16"/>
+        <rect x="560" y="60" width="40" height="110"/><rect x="720" y="60" width="40" height="110"/>
+      </g>
+      <rect x="632" y="16" width="20" height="8" fill="#ff4a50"/><rect x="668" y="16" width="20" height="8" fill="#ff4a50"/>
+      <rect x="640" y="70" width="40" height="6" fill="#2fd3c3" opacity=".7"/>
+      </g>
+      <g fill="#f5c34f" id="wins"></g>
+    </svg>
+  </div>
+</div>
+
+<div class="wrap">
+<header>
+  <div class="logo"><b>Школа личного влияния</b><span class="rb" data-rb>Ромашка</span></div>
+  <div class="pair"><input id="nA" placeholder="Имя 1" aria-label="Имя первого"><button class="gsw" data-g="a" title="Для вопросов в нужном роде"></button> и <input id="nB" placeholder="Имя 2" aria-label="Имя второго"><button class="gsw" data-g="b" title="Для вопросов в нужном роде"></button></div>
+  <div class="round" id="round"></div>
+  <div class="save" id="save">…</div>
+  <a class="chip tg" href="https://t.me/vh220" target="_blank" rel="noopener">✈ Написать автору</a>
+</header>
+<main>
+  <aside class="side">
+    <div class="guide">
+      <div class="bubble" id="bubble"><span class="who">Ниган</span><span id="say"></span></div>
+      <div class="negan" id="negan"></div>
+      <div class="roof"></div>
+      <div class="voicebar">
+        <button class="chip" id="replay">▶ Повторить</button>
+        <button class="chip" id="auto">Ниган говорит сам</button>
+      </div>
+    </div>
+    <svg class="daisy" id="daisy" viewBox="0 0 300 300" aria-label="Шаги ромашки"></svg>
+    <ul class="steps" id="steps"></ul>
+  </aside>
+  <section class="card" id="view"></section>
+</main>
+</div>
+
+<script src="data.js"></script>
+<script src="voice.js"></script>
+<script>
+const D = window.ROMASHKA, STEPS = D.steps, PETALS = STEPS.filter(s => s.kind === 'petal');
+const VOICE = window.VOICE || {};
+const KEY = 'romashka-v2';
+const PREP = STEPS.findIndex(s => s.id === 'prep');
+const blank = () => ({names: {a: D.people.a.name, b: D.people.b.name}, g: {a: D.people.a.g, b: D.people.b.g}, round: 'a', step: 0, ans: {a: {}, b: {}}, asked: {a: {}, b: {}}, auto: true});
+let S = blank();
+const SERVER = false; // на GitHub Pages сервера нет: ответы в браузере, скачиваются кнопками
+
+const $ = id => document.getElementById(id);
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const other = r => r === 'a' ? 'b' : 'a';
+const nm = r => S.names[r] || (r === 'a' ? 'Первый' : 'Второй');
+const ansName = () => nm(S.round);
+const askName = () => nm(other(S.round));
+const g = () => S.g[S.round];
+const A = (role, id) => (S.ans[role][id] ||= {});
+const fill = t => t.replaceAll('{ANS}', ansName()).replace(/\{([^|}]*)\|([^}]*)\}/g, (_, m, f) => g() === 'm' ? m : f);
+const note = t => { const m = t.match(/^\(([^)]*)\)\s*/); return m ? [m[1], t.slice(m[0].length)] : ['', t]; };
+const voiceKey = (s, i) => { const k = `${s.id}-${i}`; return VOICE[k] ? k : VOICE[`${k}.${g()}`] ? `${k}.${g()}` : null; };
+
+document.querySelectorAll('[data-rb]').forEach(el => el.innerHTML = [...el.textContent].map(c => `<span>${c}</span>`).join(''));
+
+// ───── небо: звёзды, окна, дроны
+(() => {
+  const sky = $('sky');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('i'); s.className = 'star';
+    s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 70}%;animation-delay:${-Math.random() * 4}s;opacity:${.3 + Math.random() * .7}`;
+    sky.appendChild(s);
+  }
+  const blocks = [[0,120,90],[100,90,70],[180,130,110],[300,70,40],[350,110,120],[480,95,80],[760,100,130],[900,60,60],[970,120,140],[1120,85,90],[1220,125,120],[1350,100,90]];
+  let w = '';
+  blocks.forEach(([x, y, wd]) => { for (let yy = y + 12; yy < 190; yy += 18) for (let xx = x + 10; xx < x + wd - 10; xx += 18) if (Math.random() < .3) w += `<rect x="${xx}" y="${yy}" width="8" height="8"/>`; });
+  $('wins').innerHTML = w;
+  const drone = `<svg viewBox="0 0 22 10" shape-rendering="crispEdges"><rect x="0" y="0" width="8" height="2" fill="#7d93ff"/><rect x="14" y="0" width="8" height="2" fill="#7d93ff"/><rect x="3" y="2" width="2" height="2" fill="#5a66a8"/><rect x="17" y="2" width="2" height="2" fill="#5a66a8"/><rect x="4" y="4" width="14" height="4" fill="#3a4486"/><rect x="7" y="8" width="8" height="2" fill="#2a3170"/><rect class="blink" x="10" y="5" width="2" height="2" fill="#ff4a50"/></svg>`;
+  [[12, 38], [26, 55], [8, 70]].forEach(([top, dur], i) => {
+    const d = document.createElement('div'); d.className = 'drone';
+    d.style.cssText = `top:${top}%;animation-duration:${dur}s;animation-delay:${-i * 17}s;width:${36 + i * 10}px;opacity:${.85 - i * .2}`;
+    d.innerHTML = drone; sky.appendChild(d);
+  });
+})();
+
+// ───── Ниган: позы, рот по таймеру, моргание
+const POSE = {about: 'wave', p5: 'shrug', p8: 'shrug', fb: 'grin', end: 'star'};
+
+// Расклад листков на полу (вид сверху) для шага «Что это»: центр + 8 листов по кругу с короткими названиями.
+function layoutSvg(){
+  const cx = 165, cy = 160, R = 118;
+  const wrap = t => { const w = t.split(' '); const m = Math.ceil(w.length / 2); return w.length < 2 ? [t] : [w.slice(0, m).join(' '), w.slice(m).join(' ')]; };
+  let h = `<svg viewBox="0 0 330 320" aria-label="Расклад девяти листков">`;
+  PETALS.forEach((p, i) => {
+    const a = (i * 45 - 90) * Math.PI / 180, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+    h += `<g transform="rotate(${(i % 2 ? 4 : -4)} ${x} ${y})"><rect class="sheet" x="${x - 46}" y="${y - 27}" width="92" height="54" rx="4"/>`;
+    h += `<text class="sheet-t" x="${x - 40}" y="${y - 15}" style="fill:#ff6a1a">${p.n}</text>`;
+    wrap(p.short).forEach((ln, k, arr) => h += `<text class="sheet-t" x="${x}" y="${y + (k - (arr.length - 1) / 2) * 11 + 6}" text-anchor="middle">${esc(ln)}</text>`);
+    h += `</g>`;
+  });
+  h += `<rect class="sheet sheet-c" x="${cx - 42}" y="${cy - 28}" width="84" height="56" rx="4"/>
+        <text class="sheet-t" x="${cx}" y="${cy - 2}" text-anchor="middle" style="font-size:11px">МОЙ</text>
+        <text class="sheet-t" x="${cx}" y="${cy + 11}" text-anchor="middle" style="font-size:11px">ЗАПРОС</text></svg>`;
+  return h;
+}
+let speaking = false, flap = 0, audio = null;
+function neganFrame(){
+  const base = POSE[STEPS[S.step].id] || 'idle';
+  let f = base;
+  if (speaking) f = flap % 2 ? (base === 'wave' ? 'wavetalk' : base === 'shrug' ? 'shrugtalk' : 'talk') : (base === 'wave' || base === 'shrug' ? base : 'idle');
+  $('negan').style.backgroundImage = `url(assets/negan/${f}.png)`;
+}
+setInterval(() => { if (speaking){ flap++; neganFrame(); } }, 130);
+setInterval(() => {
+  if (speaking) return;
+  const base = POSE[STEPS[S.step].id] || 'idle';
+  if (base === 'idle'){ $('negan').style.backgroundImage = 'url(assets/negan/blink.png)'; setTimeout(neganFrame, 160); }
+}, 3800);
+
+function say(text, key, li){
+  stop();
+  $('say').textContent = text;
+  if (!key || !VOICE[key]) return;
+  const a = audio = new Audio(VOICE[key]);
+  speaking = true; flap = 0; if (li) li.classList.add('speaking');
+  // прерванный play() отклоняется позже — к тому времени играет уже другой звук, его не трогаем
+  const done = () => { if (li) li.classList.remove('speaking'); if (audio !== a) return; audio = null; speaking = false; neganFrame(); };
+  a.onended = done; a.onerror = done;
+  a.play().catch(done);
+}
+function stop(){
+  if (!audio) return;
+  const a = audio; audio = null; a.pause(); speaking = false;
+  document.querySelectorAll('li.speaking').forEach(x => x.classList.remove('speaking'));
+  neganFrame();
+}
+let lastSay = [null, null];
+function stepIntro(autoplay){
+  const s = STEPS[S.step];
+  const isSwap = s.kind === 'prep' && S.round === 'b' && !stepDone('b', s);
+  const text = isSwap ? D.swap : s.negan, key = isSwap ? 'swap' : `${s.id}-n`;
+  lastSay = [text, key];
+  if (autoplay && S.auto) say(text, key); else { stop(); $('say').textContent = text; }
+}
+
+function stepDone(role, s){
+  const a = S.ans[role][s.id] || {};
+  if (s.kind === 'prep') return !!a.req;
+  if (s.kind === 'petal') return !!(a.text || a.res);
+  if (s.kind === 'fin') return !!(a.d1 || a.ins);
+  if (s.kind === 'fb') return !!a.fb;
+  return false;
+}
+
+function drawDaisy(){
+  const cx = 150, cy = 150, cur = STEPS[S.step];
+  let h = '';
+  PETALS.forEach((p, i) => {
+    const ang = i * 45, cls = ['petal', stepDone(S.round, p) ? 'done' : '', cur.id === p.id ? 'cur' : ''].join(' ');
+    h += `<g transform="rotate(${ang} ${cx} ${cy})"><ellipse class="${cls}" data-go="${STEPS.indexOf(p)}" cx="${cx}" cy="${cy - 84}" rx="30" ry="58"/>
+          <text class="pnum" x="${cx}" y="${cy - 100}" text-anchor="middle" transform="rotate(${-ang} ${cx} ${cy - 105})">${p.n}</text></g>`;
+  });
+  h += `<circle class="core ${['prep', 'fin'].includes(cur.kind) ? 'cur' : ''}" data-go="${PREP}" cx="${cx}" cy="${cy}" r="42"/>
+        <text class="core-t" x="${cx}" y="${cy - 2}" text-anchor="middle">МОЙ</text><text class="core-t" x="${cx}" y="${cy + 12}" text-anchor="middle">ЗАПРОС</text>`;
+  $('daisy').innerHTML = h;
+}
+function drawSteps(){
+  $('steps').innerHTML = STEPS.map((s, i) =>
+    `<li data-go="${i}" class="${i === S.step ? 'cur' : ''} ${stepDone(S.round, s) ? 'done' : ''}">${s.n ? s.n + '. ' : ''}${esc(s.short)}</li>`).join('');
+}
+
+const roles = () => `<div class="roles"><span>Отвечает: <b>${esc(ansName())}</b></span><span>Спрашивает и записывает: <b>${esc(askName())}</b></span></div>`;
+const tips = s => s.tips && s.tips.length ? `<div class="tips"><b>Из видео Дмитрия</b><ul>${s.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : '';
+function qList(s){
+  const asked = (S.asked[S.round][s.id] ||= []);
+  return `<button class="btn pri next" id="nextQ">▶ Ниган, следующий вопрос <kbd>пробел</kbd></button><ol class="q">` + s.q.map((t, i) => {
+    const [n, body] = note(fill(t));
+    return `<li data-ask="${i}" class="${asked.includes(i) ? 'asked' : ''}"><span class="n">${i + 1}</span><span class="t">${n ? `<i>${esc(n)}</i>` : ''}${esc(body)}</span>${voiceKey(s, i) ? `<button class="play" data-play="${i}" title="Ниган прочтёт">▶</button>` : ''}</li>`;
+  }).join('') + `</ol>`;
+}
+const field = (id, key, label, ph = '', big = true) => {
+  const v = esc(A(S.round, id)[key]);
+  return `<label for="f-${key}">${label}</label>` + (big
+    ? `<textarea id="f-${key}" data-k="${key}" placeholder="${esc(ph)}">${v}</textarea>`
+    : `<input class="f" id="f-${key}" data-k="${key}" value="${v}" placeholder="${esc(ph)}">`);
+};
+const range = (id, key, label) => {
+  const v = A(S.round, id)[key] ?? '';
+  return `<label>${label}</label><div class="range"><input type="range" min="0" max="10" data-k="${key}" value="${v === '' ? 5 : v}"><b>${v === '' ? '—' : v}</b></div>`;
+};
+
+function render(autoplay = false){
+  const s = STEPS[S.step], r = S.round;
+  $('nA').value = S.names.a; $('nB').value = S.names.b;
+  document.querySelectorAll('[data-g]').forEach(b => b.textContent = S.g[b.dataset.g] === 'm' ? 'М' : 'Ж');
+  $('round').textContent = `Круг ${r === 'a' ? 1 : 2} · отвечает ${ansName()}`;
+  $('auto').classList.toggle('on', S.auto);
+  let h = s.kind === 'about'
+    ? `<p class="eyebrow">Школа личного влияния · домашка на двоих</p><p class="brand-h rb">${[...'Ромашка'].map(c => `<span>${c}</span>`).join('')}</p><h2>Что это и зачем</h2>`
+    : `<p class="eyebrow">${s.n ? 'Лепесток ' + s.n + ' из 8' : esc(s.short)}</p><h2>${esc(s.title)}</h2>`;
+
+  if (s.kind === 'about'){
+    h += `<div class="ab">
+      <p class="lead">Упражнение на двоих. Берёшь то, что хочешь изменить в жизни или работе, и смотришь на это восемь раз, каждый раз под другим углом. В конце остаются три дела, которые сделаешь в ближайшие сутки.</p>
+
+      <h3>Как это выглядит</h3>
+      <div class="layout">${layoutSvg()}
+        <div>
+          <p>На полу <b>9 листков бумаги</b>. В середине лист «Мой запрос» (то, что хочешь изменить). Вокруг него 8 листов, на каждом одна фраза-убеждение. Получается цветок, отсюда и название.</p>
+          <p><b>Ты встаёшь на листок</b> и отвечаешь на вопросы так, будто фраза на нём — правда. Потом шагаешь на следующий.</p>
+          <p><b>Второй человек</b> рядом: включает вопросы (их читает Ниган) и коротко записывает, что ты говоришь. Потом меняетесь.</p>
+        </div>
+      </div>
+
+      <h3>Зачем ходить по бумажкам</h3>
+      <p>Так устроена техника. Перешёл на другое место — голове проще переключиться, и на новом листке думается по-другому, чем на старом. Сидя на диване с вопросником, работает слабее.</p>
+
+      <h3>Зачем это нам</h3>
+      <p>Это домашка Школы личного влияния, сдаётся в приложении TSPB (что именно приложить, смотри в самом задании).</p>
+      <p>Школа учит простой вещи: у каждого своя «карта» мира — набор убеждений, через который он смотрит на ситуацию. Пока смотришь через свою, видишь одни и те же варианты. Ромашка даёт посмотреть через восемь чужих, и всплывают люди, опыт, деньги и ходы, о которых раньше не думал.</p>
+      <p>Михаил из чата после своей Ромашки написал: «там вообще струйные инсайты».</p>
+
+      <h3>Слова, которые будут звучать</h3>
+      <div class="gl">
+        <div><b>Запрос</b>То, что хочешь изменить. Чем конкретнее, тем лучше: «спокойно называть цену 80 тысяч» работает, «хочу быть увереннее» — почти нет.</div>
+        <div><b>Пресуппозиция (ПСП)</b>Фраза на лепестке. На время упражнения принимаешь её за правду. Верить не обязательно, вопрос один: «если бы это было так, что бы я делал?»</div>
+        <div><b>Ассоциироваться</b>Говорить изнутри, от первого лица, как будто это уже про тебя. Без «ну, в теории можно было бы…».</div>
+        <div><b>Карта</b>Твоя картина мира: что ты считаешь возможным, нормальным, реальным.</div>
+        <div><b>Ресурс</b>Всё, что помогает дойти до цели: человек, навык, опыт, деньги, время, мысль.</div>
+        <div><b>Компаньон</b>Тот, кто спрашивает. Не подсказывает, не спорит, своё мнение держит при себе до самого конца.</div>
+      </div>
+
+      <h3>8 лепестков простыми словами</h3>
+      <ul class="pl">${PETALS.map(p => `<li><span>${p.n}</span><div><b>${esc(p.title)}</b><br>${esc(p.plain)}</div></li>`).join('')}</ul>
+
+      <h3>Как звучат ответы — пример</h3>
+      <p class="muted">Пример выдуманный, только чтобы было понятно, чего ждать.</p>
+      <p>Запрос: <b>«Хочу поднять цену на свои услуги с 50 до 80 тысяч, но боюсь её называть».</b></p>
+      <div class="ex"><i>Лепесток 1 · Кто уже так зарабатывает?</i>«Знакомый дизайнер Олег. Он называет цену и молчит, ничего не объясняет». <b>Ресурс: назвать цену и замолчать.</b></div>
+      <div class="ex"><i>Лепесток 2 · Какой опыт уже есть?</i>«Два раза клиенты сами согласились на 70. Оба раза я был уверен в сроках». <b>Ресурс: уверенность в сроках.</b></div>
+      <div class="ex"><i>Лепесток 8 · Где саботируешь?</i>«Сам предлагаю скидку в переписке, клиент ещё даже не ответил». <b>Ресурс: не писать про скидку первым.</b></div>
+      <div class="ex"><i>Финал · Три дела на сутки</i>Переписать прайс на 80. Отправить его двум новым клиентам. Не предлагать скидку, пока не попросят.</div>
+
+      <h3>Что получится в конце</h3>
+      <ul class="out">
+        <li>8 ресурсов, по одному с каждого лепестка;</li>
+        <li>3 конкретных дела на ближайшие сутки;</li>
+        <li>оценка «насколько достижимо» до и после, от 0 до 10;</li>
+        <li>файл с ответами для отчёта, у каждого свой.</li>
+      </ul>
+
+      <h3>Если не знаешь, что ответить</h3>
+      <p>Это нормально. В инструкции так и написано: <b>ступор — хорошо, карта расширяется.</b> Помолчи, подумай, скажи первое, что пришло. Неправильных ответов тут нет.</p>
+    </div>`;
+  } else if (s.kind === 'intro'){
+    h += `<ul class="rules">
+      <li><b>Двое.</b> Один стоит на листках и отвечает. Второй жмёт «следующий вопрос» — Ниган читает — и коротко записывает ответ. Потом меняетесь.</li>
+      <li><b>Компаньон не подсказывает</b> и не навязывает своё видение. Только вопросы по списку. Обратная связь — в самом конце.</li>
+      <li><b>9 листков:</b> 1 — «Мой запрос» в центр, 8 — пресуппозиции по кругу, по одной на лист. Подпишите заранее.</li>
+      <li><b>На каждом лепестке</b> отвечающий встаёт на лист и «надевает» пресуппозицию на себя. Ищем ресурс для запроса.</li>
+      <li><b>Ступор — это хорошо,</b> карта расширяется. В стрессе — расслабляйтесь.</li>
+      <li><b>Время:</b> около часа на одного, перерыв между кругами.</li>
+      <li><b>Ответы хранятся в этом браузере.</b> В конце каждый скачивает свои кнопкой «Скачать». Начали на ноутбуке — там и заканчивайте.</li>
+    </ul>`;
+  } else if (['prep', 'petal', 'fin'].includes(s.kind)){
+    h += roles();
+    if (s.kind === 'petal') h += `<div class="doing">${esc(ansName())} встаёт на лист <b>«${esc(s.title)}»</b> и ассоциируется. В конце — шаг с листа.</div>`;
+    if (s.kind === 'prep') h += `<div class="doing">Лист <b>«Мой запрос»</b> — в центр. ${esc(ansName())} встаёт на него.</div>`;
+    if (s.kind === 'fin') h += `<div class="doing">${esc(ansName())} встаёт в центр и проходит по всем лепесткам ещё раз, <b>собирая листочки</b>.</div>`;
+    h += tips(s) + qList(s);
+    if (s.kind === 'prep'){
+      h += field(s.id, 'req', 'Запрос одной фразой', 'Например: уверенно вести переговоры и закрывать сделки', false)
+         + field(s.id, 'text', 'Конкретика и состояние в центре', 'Цифры, сроки, что изменится; что чувствует')
+         + range(s.id, 'before', 'Достижимость сейчас, 0–10');
+    } else if (s.kind === 'petal'){
+      h += field(s.id, 'text', 'Что говорит — кратко', 'Ключевое, своими словами')
+         + field(s.id, 'res', 'Ресурс с этого лепестка', 'Одной фразой', false);
+    } else {
+      h += field(s.id, 'think', 'Что теперь думает о цели')
+         + field(s.id, 'd1', 'Действие 1 — в течение суток', '', false)
+         + field(s.id, 'd2', 'Действие 2', '', false)
+         + field(s.id, 'd3', 'Действие 3', '', false)
+         + field(s.id, 'ins', 'До и после. Инсайты')
+         + range(s.id, 'after', 'Достижимость теперь, 0–10');
+    }
+  } else if (s.kind === 'fb'){
+    h += `<p><b>${esc(askName())}</b> даёт обратную связь: что заметил(а), что подсветить, где был сдвиг. ${esc(ansName())} говорит, что откликнулось.</p>`
+       + tips(s) + field(s.id, 'fb', `Обратная связь от ${esc(askName())}`, 'Что заметно со стороны')
+       + field(s.id, 'echo', `Что откликнулось у ${esc(ansName())}`);
+    if (r === 'a') h += `<p class="muted">Дальше — перерыв и смена ролей.</p>`;
+  } else {
+    h += `<p class="muted">${SERVER ? 'Файлы лежат в папке «ответы» рядом со страницей и обновляются сами.' : 'Ответы хранятся только в этом браузере. Скачайте каждый свои — файл .txt открывается любым блокнотом, текст можно сразу вставить в отчёт.'}</p><div class="cols">`
+       + ['a', 'b'].map(role => `<div><h3>${esc(nm(role))}</h3><div class="sum">${esc(md(role))}</div>
+           <div class="nav"><button class="btn sm" data-copy="${role}">Скопировать</button><button class="btn sm" data-dl="${role}">Скачать .txt</button></div></div>`).join('')
+       + `</div><p class="muted" style="margin-top:22px">Новая пара на этом же устройстве — <button class="btn sm" id="reset">очистить всё</button></p>`;
+  }
+
+  h += `<div class="nav"><button class="btn" data-nav="-1" ${S.step === 0 ? 'disabled' : ''}>← Назад</button>`;
+  if (s.kind === 'fb' && r === 'a') h += `<button class="btn pri" id="swap">Поменяться ролями → круг 2</button>`;
+  else if (S.step < STEPS.length - 1) h += `<button class="btn pri" data-nav="1">Дальше →</button>`;
+  if (r === 'b' && s.kind !== 'end') h += `<button class="btn" data-goto="${STEPS.length - 1}">К итогу</button>`;
+  h += `</div>`;
+  h += `<div class="credit"><span>Сделал <b>Владимир Хачатуров</b>, 41 поток · «Империя влияния»</span><a class="chip tg" href="https://t.me/vh220" target="_blank" rel="noopener">✈ Предложить правку или идею в Телеграм</a></div>`;
+  $('view').innerHTML = h;
+  drawDaisy(); drawSteps(); neganFrame(); stepIntro(autoplay);
+}
+
+function md(role){
+  const a = id => S.ans[role][id] || {}, p = a('prep'), f = a('fin'), fb = a('fb');
+  const partner = nm(other(role));
+  let t = `# Ромашка — ${nm(role)}\n\nКомпаньон: ${partner}\nДата: ${new Date().toLocaleDateString('ru-RU')}\n\n## Запрос\n${p.req || '—'}\n`;
+  if (p.text) t += `\n${p.text}\n`;
+  t += `\nДостижимость: до ${p.before ?? '—'}/10 → после ${f.after ?? '—'}/10\n\n## Лепестки\n`;
+  PETALS.forEach(s => {
+    const x = a(s.id);
+    t += `\n### ${s.n}. ${s.title}\n`;
+    if (x.res) t += `Ресурс: ${x.res}\n`;
+    if (x.text) t += `${x.text}\n`;
+    if (!x.res && !x.text) t += '—\n';
+  });
+  t += `\n## Завершение\n${f.think || ''}\n\n### Три действия на сутки\n1. ${f.d1 || ''}\n2. ${f.d2 || ''}\n3. ${f.d3 || ''}\n\n### До и после, инсайты\n${f.ins || '—'}\n`;
+  t += `\n## Обратная связь от ${partner}\n${fb.fb || '—'}\n`;
+  if (fb.echo) t += `\nЧто откликнулось: ${fb.echo}\n`;
+  return t;
+}
+
+let timer;
+function persist(){
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  clearTimeout(timer);
+  timer = setTimeout(async () => {
+    const el = $('save'), time = new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+    if (!SERVER){ el.className = 'save warn'; el.textContent = `Сохранено в браузере · ${time}`; return; }
+    try {
+      const files = {[`Ромашка — ${S.names.a}.md`]: md('a'), [`Ромашка — ${S.names.b}.md`]: md('b')};
+      const r = await fetch('/api/save', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({state: S, files})});
+      if (!r.ok) throw 0;
+      el.className = 'save ok'; el.textContent = `Сохранено в папку «ответы» · ${time}`;
+    } catch (e){ el.className = 'save warn'; el.textContent = 'Сервер не отвечает — сохранено только в браузере'; }
+  }, 600);
+}
+
+function go(i){ S.step = Math.max(0, Math.min(STEPS.length - 1, i)); persist(); render(true); scrollTo({top: 0, behavior: 'smooth'}); }
+function playQ(i){
+  const s = STEPS[S.step], li = document.querySelector(`[data-ask="${i}"]`);
+  const arr = S.asked[S.round][s.id];
+  if (!arr.includes(i)){ arr.push(i); li.classList.add('asked'); persist(); }
+  say(note(fill(s.q[i]))[1], voiceKey(s, i), li);
+  li.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+}
+function nextQ(){
+  const s = STEPS[S.step]; if (!s.q) return;
+  const arr = S.asked[S.round][s.id] || [];
+  const i = s.q.findIndex((_, k) => !arr.includes(k));
+  if (i >= 0) playQ(i); else $('say').textContent = 'Вопросы на этом лепестке кончились. Жми «Дальше».';
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-go],[data-nav],[data-goto],[data-ask],[data-play],[data-copy],[data-dl],[data-g],#swap,#reset,#replay,#auto,#nextQ');
+  if (!t) return;
+  if (t.dataset.g){ const r = t.dataset.g; S.g[r] = S.g[r] === 'm' ? 'f' : 'm'; persist(); render(); return; }
+  if (t.dataset.play){ e.stopPropagation(); playQ(+t.dataset.play); }
+  else if (t.dataset.go) go(+t.dataset.go);
+  else if (t.dataset.nav) go(S.step + +t.dataset.nav);
+  else if (t.dataset.goto) go(+t.dataset.goto);
+  else if (t.dataset.ask){
+    const arr = S.asked[S.round][STEPS[S.step].id], i = +t.dataset.ask, k = arr.indexOf(i);
+    k < 0 ? arr.push(i) : arr.splice(k, 1); t.classList.toggle('asked'); persist();
+  }
+  else if (t.id === 'nextQ') nextQ();
+  else if (t.id === 'replay') say(lastSay[0], lastSay[1]);
+  else if (t.id === 'auto'){ S.auto = !S.auto; t.classList.toggle('on', S.auto); if (!S.auto) stop(); persist(); }
+  else if (t.dataset.copy){ navigator.clipboard.writeText(md(t.dataset.copy)); t.textContent = 'Скопировано ✓'; }
+  else if (t.dataset.dl){
+    const role = t.dataset.dl, a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([md(role)], {type: 'text/plain;charset=utf-8'}));
+    a.download = `Ромашка — ${nm(role)}.txt`; a.click();
+  }
+  else if (t.id === 'swap'){ S.round = 'b'; S.step = PREP; persist(); render(true); scrollTo({top: 0}); }
+  else if (t.id === 'reset' && confirm('Стереть все ответы обоих?')){ const n = S.names; S = blank(); S.names = n; persist(); render(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.code !== 'Space' || e.target.matches('textarea,input')) return;
+  e.preventDefault(); nextQ();
+});
+document.addEventListener('input', e => {
+  const k = e.target.dataset.k;
+  if (k){
+    A(S.round, STEPS[S.step].id)[k] = e.target.type === 'range' ? +e.target.value : e.target.value;
+    if (e.target.type === 'range') e.target.nextElementSibling.textContent = e.target.value;
+    else drawSteps(), drawDaisy();
+    persist();
+  }
+  if (e.target.id === 'nA' || e.target.id === 'nB'){
+    S.names[e.target.id === 'nA' ? 'a' : 'b'] = e.target.value;
+    $('round').textContent = `Круг ${S.round === 'a' ? 1 : 2} · отвечает ${ansName()}`;
+    persist();
+  }
+});
+
+(async () => {
+  let loaded = null;
+  if (SERVER){ try { const j = await (await fetch('/api/state')).json(); if (j && j.names) loaded = j; } catch (e) {} }
+  if (!loaded){ try { loaded = JSON.parse(localStorage.getItem(KEY)); } catch (e) {} }
+  if (loaded) S = Object.assign(blank(), loaded);
+  render(); persist();
+})();
+</script>
+</body>
+</html>
